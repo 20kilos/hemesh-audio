@@ -34,7 +34,7 @@ void setup() {
 
   minim = new Minim(this);
   player = minim.loadFile("01 No Partial.mp3");
-   player.play();
+  player.play();
 }
 
 void draw() {
@@ -60,7 +60,7 @@ void draw() {
   dynMesh.update();
 
   modifier=new HEM_Noise();
-  modifier.setDistance(getNoiseLevel()/20);
+  modifier.setDistance(getNoiseLevelAccurate());
   dynMesh.modify(modifier);
 
 
@@ -111,6 +111,16 @@ float getDiameter() {
 float getNoiseLevel() {
   // Map values from  -1-1 > -80-80
   return player.right.get(0) * 2000;
+}
+
+
+float getNoiseLevelAccurate() {
+  float total = 0;
+  for(int i = 0; i < player.bufferSize() - 1; i++) {
+    total += player.right.get(i);
+    total += player.left.get(i);
+  }
+  return (total/2);
 }
 
 float getW() {
