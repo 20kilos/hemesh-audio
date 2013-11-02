@@ -9,6 +9,7 @@ import ddf.minim.*;
 
 
 HE_DynamicMesh dynMesh;
+HEM_Noise modifier;
 WB_Render render;
 HEM_Lattice lattice;
 
@@ -22,6 +23,8 @@ void setup() {
   
   minim = new Minim(this);
   in = minim.getLineIn();
+  
+
 }
 
 void draw() {
@@ -32,6 +35,12 @@ void draw() {
   float w= getW();
   lattice.setWidth(d).setDepth(w);
   dynMesh.update();
+  
+  modifier=new HEM_Noise();
+  modifier.setDistance(mouseY/20);
+  dynMesh.modify(modifier);
+
+  
   noSmooth();
   noStroke();
   fill(255);
@@ -40,6 +49,7 @@ void draw() {
   smooth();
   stroke(0);
   render.drawEdges(dynMesh);
+  
 }
 
 void createMesh() {
@@ -63,6 +73,10 @@ void createMesh() {
   //All modifiers and subdividors are applied on a call to update()
   dynMesh.update();
 
+  modifier=new HEM_Noise();
+  modifier.setDistance(20);
+  dynMesh.modify(modifier);
+
   render=new WB_Render(this);
 }
 
@@ -76,4 +90,3 @@ float getDiameter() {
 float getW() {
   return (float) 1.0+(in.left.get(0) * 1000) *60.0/width;
 }
-
