@@ -3,51 +3,62 @@ import wblut.processing.*;
 import wblut.core.*;
 import wblut.hemesh.*;
 import wblut.geom.*;
-import ddf.minim.analysis.*; //imports the correct library
+
+import ddf.minim.analysis.*;
 import ddf.minim.*;
 
-Minim       minim;
-AudioInput in;       // this calls your laptops audio in mic
 
-HE_Mesh mesh, copymesh;
+HE_DynamicMesh dynMesh;
 WB_Render render;
+HEM_Lattice lattice;
+
+Minim  minim;
+AudioInput in;      
 
 void setup() {
   size(800, 800, P3D);
-  createMesh();
   
   minim = new Minim(this);
   in = minim.getLineIn();
   
-  HEM_Noise modifier=new HEM_Noise();
-  modifier.setDistance(20);
-  copymesh.modify(modifier);
+  
+  HE_Mesh cube=new HE_Mesh(new HEC_Cube().setEdge(600));  
+  //a dynamic mesh is called with the base mesh as argument
+  dynMesh = new HE_DynamicMesh(cube);
+
+  //subdividors can be added implicitely, to be applied more than once it should be added again
+  dynMesh.add(new HES_CatmullClark());
+
+  //modifiers can be added implicitely
+  dynMesh.add(new HEM_Extrude().setDistance(0).setChamfer(0.5));
+  //However adding implicitely is not useful as the parameters can no longer be changed.
+  //It is better to apply fixed modifiers to the base mesh before passing it through to
+  //the HE_DynamicMesh. This way their overhead is avoided each update().
+
+  //Modifiers or subdividors that are to be dynamic should be called explicitely.
+  lattice=new HEM_Lattice().setWidth(10).setDepth(5);
+  dynMesh.add(lattice);
+  //All modifiers and subdividors are applied on a call to update()
+  dynMesh.update();
 
   render=new WB_Render(this);
 }
 
 void draw() {
-  background(120);
-  directionalLight(255, 255, 255, 1, 1, -1);
-  directionalLight(127, 127, 127, -1, -1, 1);
-  translate(400,400, 0);
-  rotateY(mouseX*1.0f/width*TWO_PI);
-  HEM_Noise modifier=new HEM_Noise();
-  copymesh=mesh.get();
-  modifier.setDistance(in.left.get(0) * 1028/20);
-  copymesh.modify(modifier);
-  
-  rotateX(mouseY*1.0f/height*TWO_PI);
-  fill(255);
+  background(255);
+  lights();
+  translate(400, 400);
+  float d=-80.0+mouseY*160.0/height;
+  float w=1.0+(in.left.get(0) * 1000) *60.0/width;
+  lattice.setWidth(w).setDepth(d);
+  dynMesh.update();
+  noSmooth();
   noStroke();
-  render.drawFaces(copymesh);
+  fill(255);
+  render.drawFaces(dynMesh);
+
+  smooth();
   stroke(0);
-  render.drawEdges(mesh);
+  render.drawEdges(dynMesh);
 }
 
-
-void createMesh(){
-  HEC_Cube creator=new HEC_Cube(300,5,5,5);
-  mesh=new HE_Mesh(creator); 
-  copymesh=mesh.get();
-}
