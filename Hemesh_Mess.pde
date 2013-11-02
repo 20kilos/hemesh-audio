@@ -7,6 +7,7 @@ import wblut.geom.*;
 import ddf.minim.analysis.*;
 import ddf.minim.*;
 
+float angle = 0;
 
 HE_DynamicMesh dynMesh;
 HEM_Noise modifier;
@@ -32,12 +33,12 @@ void draw() {
   lights();
   translate(400, 400);
   float d= getDiameter();
-  float w= getW();
+  float w= 50;
   lattice.setWidth(d).setDepth(w);
   dynMesh.update();
   
   modifier=new HEM_Noise();
-  modifier.setDistance(mouseY/20);
+  modifier.setDistance(getNoiseLevel()/20);
   dynMesh.modify(modifier);
 
   
@@ -54,7 +55,7 @@ void draw() {
 
 void createMesh() {
   
-  HE_Mesh cube=new HE_Mesh(new HEC_Cube().setEdge(600));  
+  HE_Mesh cube=new HE_Mesh(new HEC_Cube().setEdge(300));  
   //a dynamic mesh is called with the base mesh as argument
   dynMesh = new HE_DynamicMesh(cube);
 
@@ -81,10 +82,14 @@ void createMesh() {
 }
 
 float getDiameter() {
-  
-  // Map values from  -1-1 > -80-80
-  float d = in.right.get(0) * 80;
-  return d;
+  angle += 0.1;
+  return sin(angle) * 40;
+}
+
+float getNoiseLevel() {
+   // Map values from  -1-1 > -80-80
+  float n = in.right.get(0) * 10000;
+  return n;
 }
 
 float getW() {
