@@ -50,9 +50,10 @@ void draw() {
   yRotation += 0.01;
   xRotation += 0.03;
 
-  float d= getDiameter();
-  float w= 50;
-  lattice.setWidth(getDiameter()).setDepth(w);
+  float d= map(mouseX, 0, width,0, 40);
+  println(d);
+  float w= map(mouseY, 0, width,0, 40);
+  lattice.setWidth(d).setDepth(w);
   dynMesh.update();
 
   modifier=new HEM_Noise();
@@ -72,7 +73,7 @@ void draw() {
 
 void createMesh() {
 
-  HE_Mesh cube=new HE_Mesh(new HEC_Cube().setEdge(300));  
+  HE_Mesh cube=new HE_Mesh(new HEC_Cube().setEdge(400));  
   //a dynamic mesh is called with the base mesh as argument
   dynMesh = new HE_DynamicMesh(cube);
 
@@ -106,7 +107,7 @@ float getDiameter() {
 
 float getNoiseLevel() {
   // Map values from  -1-1 > -80-80
-  return map(in.right.get(0), -1, 1, 0, 1000);
+  return in.right.get(0) * 1000;
 }
 
 float getW() {
