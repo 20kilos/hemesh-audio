@@ -18,9 +18,31 @@ AudioInput in;
 void setup() {
   size(800, 800, P3D);
   
+  createMesh();
+  
   minim = new Minim(this);
   in = minim.getLineIn();
-  
+}
+
+void draw() {
+  background(255);
+  lights();
+  translate(400, 400);
+  float d= getDiameter();
+  float w= getW();
+  lattice.setWidth(d).setDepth(w);
+  dynMesh.update();
+  noSmooth();
+  noStroke();
+  fill(255);
+  render.drawFaces(dynMesh);
+
+  smooth();
+  stroke(0);
+  render.drawEdges(dynMesh);
+}
+
+void createMesh() {
   
   HE_Mesh cube=new HE_Mesh(new HEC_Cube().setEdge(600));  
   //a dynamic mesh is called with the base mesh as argument
@@ -44,21 +66,14 @@ void setup() {
   render=new WB_Render(this);
 }
 
-void draw() {
-  background(255);
-  lights();
-  translate(400, 400);
-  float d=-80.0+mouseY*160.0/height;
-  float w=1.0+(in.left.get(0) * 1000) *60.0/width;
-  lattice.setWidth(w).setDepth(d);
-  dynMesh.update();
-  noSmooth();
-  noStroke();
-  fill(255);
-  render.drawFaces(dynMesh);
+float getDiameter() {
+  
+  // Map values from  -1-1 > -80-80
+  float d = in.right.get(0) * 80;
+  return d;
+}
 
-  smooth();
-  stroke(0);
-  render.drawEdges(dynMesh);
+float getW() {
+  return (float) 1.0+(in.left.get(0) * 1000) *60.0/width;
 }
 
