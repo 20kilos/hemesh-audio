@@ -22,7 +22,9 @@ WB_Render render;
 HEM_Lattice lattice;
 
 Minim  minim;
-AudioInput in;      
+AudioPlayer player;
+
+
 
 void setup() {
   size(800, 800, P3D);
@@ -31,7 +33,8 @@ void setup() {
   createMesh();
 
   minim = new Minim(this);
-  in = minim.getLineIn();
+  player = minim.loadFile("01 No Partial.mp3");
+   player.play();
 }
 
 void draw() {
@@ -107,9 +110,9 @@ float getDiameter() {
 
 float getNoiseLevel() {
   // Map values from  -1-1 > -80-80
-  return in.right.get(0) * 1000;
+  return player.right.get(0) * 2000;
 }
 
 float getW() {
-  return (float) 1.0+(in.left.get(0) * 1000) *60.0/width;
+  return (float) 1.0+(player.left.get(0) * 1000) *60.0/width;
 }
