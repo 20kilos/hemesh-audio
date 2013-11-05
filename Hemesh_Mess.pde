@@ -1,5 +1,3 @@
-import controlP5.*;
-
 import wblut.math.*;
 import wblut.processing.*;
 import wblut.core.*;
@@ -8,14 +6,10 @@ import wblut.geom.*;
 
 import ddf.minim.analysis.*;
 import ddf.minim.*;
-
-ControlP5 cp5;
-int sliderValue = 100;
-int sliderTicks1 = 100;
-
+// Camera
 float angle = 0;
 float xRotation, yRotation = 0;
-
+// HMesh
 HE_DynamicMesh dynMesh;
 HEM_Noise modifier;
 WB_Render render;
@@ -24,17 +18,12 @@ HEM_Lattice lattice;
 Minim  minim;
 AudioPlayer player;
 
-
-
-void setup() {
+void setup() 
+{  
   size(800, 800, P3D);
   colorMode(HSB);
- 
   createMesh();
-
-  minim = new Minim(this);
-  player = minim.loadFile("01 No Partial.mp3");
-  player.play();
+  setupSound();
 }
 
 void draw() {
@@ -42,16 +31,8 @@ void draw() {
   lights();
   translate(400, 400);
   
-  
-  directionalLight(255, 120, 255, -1, -1, 1);
-  directionalLight(10, 255, 50, 1, 1, -1);
-  
+  setLights();
 
-  rotateY(yRotation);
-  rotateX(xRotation);
-  
-  yRotation += 0.01;
-  xRotation += 0.03;
 
   float d= map(mouseX, 0, width,0, 40);
   println(d);
@@ -60,9 +41,8 @@ void draw() {
   dynMesh.update();
 
   modifier=new HEM_Noise();
-  modifier.setDistance(getNoiseLevelAccurate());
+  modifier.setDistance(getAmplitude());
   dynMesh.modify(modifier);
-
 
   noSmooth();
   noStroke();
@@ -102,27 +82,33 @@ void createMesh() {
   render=new WB_Render(this);
 }
 
-float getDiameter() {
-  angle += 0.1;
-  println(sin(angle));
-  return sin(angle) * 40;
+void rotate() 
+{
+  rotateY(yRotation);
+  rotateX(xRotation);  
+  yRotation += 0.01;
+  xRotation += 0.03;
 }
 
-float getNoiseLevel() {
-  // Map values from  -1-1 > -80-80
-  return player.right.get(0) * 2000;
+void setLights()
+{
+  directionalLight(255, 120, 255, -1, -1, 1);
+  directionalLight(10, 255, 50, 1, 1, -1);
 }
 
+void setupSound() 
+{
+  minim = new Minim(this);
+  player = minim.loadFile("01 No Partial.mp3");
+  player.play();
+}
 
-float getNoiseLevelAccurate() {
+float getAmplitude() 
+{  
   float total = 0;
-  for(int i = 0; i < player.bufferSize() - 1; i++) {
-    total += player.right.get(i);
-    total += player.left.get(i);
+  int bufferSize = player.bufferSize();
+  for(int i = 0; i < bufferSize - 1; i++) {
+    total += player.mix.get(i);
   }
-  return (total/2);
-}
-
-float getW() {
-  return (float) 1.0+(player.left.get(0) * 1000) *60.0/width;
+  return (total/bufferSize);
 }
