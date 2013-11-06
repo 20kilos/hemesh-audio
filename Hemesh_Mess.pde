@@ -2,7 +2,6 @@
 float angle = 0;
 float xRotation, yRotation = 0;
 
-PGraphics pg;
 Mesh mesh;
 
 TapeDeck tapeDeck;
@@ -14,7 +13,7 @@ void setup()
   frameRate(60);
   colorMode(HSB);
   println(this.getClass());
-  mesh = new Mesh(this);
+  mesh = new Mesh(this, 8, 8, 20, 5);
  
   tapeDeck = new TapeDeck(this, "01 No Partial.mp3");
   tapeDeck.play();
@@ -25,16 +24,15 @@ void draw()
   background(255);
   lights();
   smooth();
-  translate(width/2, height/2);
-  rotate();
-  mesh.drawMesh();
   setLights();
+  mesh.drawMesh(tapeDeck.getAmplitude());
 }
 
 void rotate() 
 {
   rotateY(yRotation);
-  rotateX(xRotation);  
+  rotateX(xRotation);
+  rotateY(xRotation);    
   yRotation += 0.01;
   xRotation += 0.05;
 }

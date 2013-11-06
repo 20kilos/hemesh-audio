@@ -3,21 +3,21 @@ import ddf.minim.*;
 
 class TapeDeck 
 {
-  Minim  minim;
-  AudioPlayer player;
+  private Minim  minim;
+  private AudioPlayer player;
   
-  TapeDeck(Object o, String fileName) 
+  TapeDeck(PApplet p, String fileName) 
   {
-    minim = new Minim(o);
+    minim = new Minim(p);
     player = minim.loadFile(fileName,128);
   }
   
-  void play()
+  public void play()
   {
     player.play();
   }
   
-  float getAmplitude() 
+  public float getAmplitude() 
   {
     float total = 1;
     int bufferSize = player.bufferSize();
